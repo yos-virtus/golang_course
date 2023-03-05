@@ -43,6 +43,12 @@ var text = `Как видите, он  спускается  по  лестни�
 	посидеть у огня и послушать какую-нибудь интересную сказку.
 		В этот вечер...`
 
+var (
+	latinText                        = "cat and dog, one dog,two cats and one man"
+	wordsOnlyIfSeparatedByWhitespace = "Нога нога нога! нога, 'нога'"
+	dashesIgnoredInWords             = "какой-то какойто"
+)
+
 func TestTop10(t *testing.T) {
 	t.Run("no words in empty string", func(t *testing.T) {
 		require.Len(t, Top10(""), 0)
@@ -78,5 +84,30 @@ func TestTop10(t *testing.T) {
 			}
 			require.Equal(t, expected, Top10(text))
 		}
+	})
+
+	t.Run("less than 10 elements", func(t *testing.T) {
+		require.Equal(t, 4, len(Top10("one two three four")))
+	})
+
+	t.Run("latin text", func(t *testing.T) {
+		expected := []string{
+			"and",
+			"one",
+			"cat",
+			"cats",
+			"dog,",
+			"dog,two",
+			"man",
+		}
+		require.Subset(t, expected, Top10(latinText))
+	})
+
+	t.Run("words are only separeted by whitespaces", func(t *testing.T) {
+		require.Equal(t, 5, len(Top10(wordsOnlyIfSeparatedByWhitespace)))
+	})
+
+	t.Run("dashes ignored in words", func(t *testing.T) {
+		require.Equal(t, 2, len(Top10(dashesIgnoredInWords)))
 	})
 }
